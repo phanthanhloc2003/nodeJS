@@ -10,10 +10,15 @@
   "author": "TL",
   "license": "MIT",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
     "express": "^4.19.2",
+    "i": "^0.3.7",
     "morgan": "^1.10.0",
     "nodemon": "^3.1.0",
+    "npm": "^10.5.2",
     "sequelize": "^6.37.2",
+    "sqlite3": "^5.1.7",
     "tedious": "^18.1.0"
   }
 }
