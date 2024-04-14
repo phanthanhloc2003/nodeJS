@@ -1,29 +1,31 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../services/db');
-const Users = require('./userControlers'); // Import mô hình Users
+const { DataTypes } = require("sequelize");
+const sequelize = require("../services/db");
+const Users = require("./userControlers"); // Import mô hình Users
 
-const Sellers = sequelize.define("Sellers", {
+const Sellers = sequelize.define(
+  "Sellers",
+  {
     user_id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        references: {
-            model: Users,
-            key: 'id'
-        }
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      references: {
+        model: Users,
+        key: "id",
+      },
     },
     shop_name: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
     },
     shop_category: {
-        type: DataTypes.STRING,
-        allowNull: false
-    }
-}, {
-    timestamps: true // Tạo cột "createdAt" và "updatedAt"
-});
+      type: DataTypes.STRING,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-Sellers.belongsTo(Users, { foreignKey: 'user_id' }); // Thiết lập ràng buộc khóa ngoại
+Sellers.belongsTo(Users, { foreignKey: "user_id" }); // Thiết lập ràng buộc khóa ngoại
 
 Sellers.sync();
 

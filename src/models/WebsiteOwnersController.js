@@ -13,11 +13,11 @@ const WebsiteOwners = sequelize.define("WebsiteOwners", {
     },
     website_name: {
         type: DataTypes.STRING,
-        allowNull: false
+       
     },
     website_url: {
         type: DataTypes.STRING,
-        allowNull: false
+        
     }
 }, {
     timestamps: true // Tạo cột "createdAt" và "updatedAt"
