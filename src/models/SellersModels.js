@@ -19,6 +19,9 @@ const Sellers = sequelize.define(
     shop_category: {
       type: DataTypes.STRING,
     },
+    shop_address: {
+      type: DataTypes.STRING,
+    }
   },
   {
     timestamps: true,

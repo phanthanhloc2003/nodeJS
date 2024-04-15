@@ -7,7 +7,7 @@ const genneraAccessToken = (payload) => {
       ...payload,
     },
     "accessToken",
-    { expiresIn: "30s" }
+    { expiresIn: "1h" }
   );
 
   return accessToken;

@@ -2,7 +2,7 @@ const Customers = require("../models/CustomersModels");
 const Sellers = require("../models/SellersModels");
 const Users = require("../models/userModels");
 const bcrypt = require("bcryptjs");
-const genneraAccessToken = require('../JwtService/accessToken');
+const genneraAccessToken = require("../JwtService/accessToken");
 const genneraRefreshToken = require("../JwtService/refreshToken");
 const updateAccsessToken = require("../JwtService/updateAccsessToken");
 
@@ -150,50 +150,81 @@ class UserController {
           message: "mật khẩu không đúng vui lòng nhập lại",
         });
       }
-       const accsessToken = await genneraAccessToken({
+      const accsessToken = await genneraAccessToken({
         id: user.id,
-        role: user.role
-       })
-       const refreshToken = await genneraRefreshToken({
+        role: user.role,
+      });
+      const refreshToken = await genneraRefreshToken({
         id: user.id,
-        role: user.role
-       })
-     
+        role: user.role,
+      });
+
       return res.status(200).json({
         status: "đăng nhập thành công",
-        data:{ accsessToken, refreshToken}
+        data: { accsessToken, refreshToken },
       });
     } catch (error) {
       return res.status(404).json({
         status: "error",
-        message: error
+        message: error,
+      });
+    }
+  }
+
+  async upgradeUserSellers(req, res) {
+    const { shop_name, shop_category, shop_address } = req.body;
+    const userId = req.userId;
+    if (!shop_name || !shop_category || !shop_address || !userId) {
+      return res.status(400).json({
+        status: "error",
+        message: "vui lòng nhập đủ thông tin",
+      });
+    }
+    try {
+      const userSellers = await Sellers.create({
+        user_id: userId,
+        shop_name: shop_name,
+        shop_category: shop_category,
+        shop_address: shop_address,
+      });
+      await Users.update({role: "sellers"} , {
+        where: {
+          id: userId,
+        }
       })
+      return res.status(200).json({
+        status: "success",
+        message: "đăng ký thành công Sellers ",
+        data: userSellers,
+      });
+    } catch (error) {
+      return res.status(404).json({
+        status: "error",
+        message: error.message,
+      });
     }
   }
   async accsessToken(req, res) {
-    const {refreshToken} = req.body
-    if(!refreshToken){
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
       return res.status(404).json({
         status: "error",
-        message: "không nhận đc refreshToken "
-      })
+        message: "không nhận đc refreshToken ",
+      });
     }
     try {
-      const accessToken = await updateAccsessToken(refreshToken)
-     return res.status(200).json({
-      status: "success",
-      message: "cập nhập accsessToken thành công",
-      data: accessToken
-     })
-   
+      const accessToken = await updateAccsessToken(refreshToken);
+      return res.status(200).json({
+        status: "success",
+        message: "cập nhập accsessToken thành công",
+        data: accessToken,
+      });
     } catch (error) {
       res.status(404).json({
         status: "error",
-        message: error.message
-      })
-       
+        message: error.message,
+      });
     }
-
   }
 }
 
