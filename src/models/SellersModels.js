@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../services/db");
-const Users = require("./userControlers"); // Import mô hình Users
+const Users = require("./userModels"); // Import mô hình Users
 
 const Sellers = sequelize.define(
   "Sellers",
