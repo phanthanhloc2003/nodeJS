@@ -4,6 +4,7 @@ const Users = require("../models/userModels");
 const bcrypt = require("bcryptjs");
 const genneraAccessToken = require('../JwtService/accessToken');
 const genneraRefreshToken = require("../JwtService/refreshToken");
+const updateAccsessToken = require("../JwtService/updateAccsessToken");
 
 class UserController {
   async registerUserCustomers(req, res) {
@@ -114,7 +115,6 @@ class UserController {
       });
     }
   }
-
   async loginUser(req, res) {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -169,6 +169,31 @@ class UserController {
         message: error
       })
     }
+  }
+  async accsessToken(req, res) {
+    const {refreshToken} = req.body
+    if(!refreshToken){
+      return res.status(404).json({
+        status: "error",
+        message: "không nhận đc refreshToken "
+      })
+    }
+    try {
+      const accessToken = await updateAccsessToken(refreshToken)
+     return res.status(200).json({
+      status: "success",
+      message: "cập nhập accsessToken thành công",
+      data: accessToken
+     })
+   
+    } catch (error) {
+      res.status(404).json({
+        status: "error",
+        message: error.message
+      })
+       
+    }
+
   }
 }
 
