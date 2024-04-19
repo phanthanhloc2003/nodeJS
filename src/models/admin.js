@@ -2,13 +2,14 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../services/db');
 const Users = require('./userModels'); // Import mô hình Users
 
-const WebsiteOwners = sequelize.define("WebsiteOwners", {
+const Admin = sequelize.define("Admin", {
     user_id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         references: {
             model: Users, // Tham chiếu đến bảng Users
-            key: 'id' // Tham chiếu đến cột id trong bảng Users
+            key: 'id' ,// Tham chiếu đến cột id trong bảng Users
+            onDelete: 'CASCADE'
         }
     },
     website_name: {
@@ -23,8 +24,8 @@ const WebsiteOwners = sequelize.define("WebsiteOwners", {
     timestamps: true // Tạo cột "createdAt" và "updatedAt"
 });
 
-WebsiteOwners.belongsTo(Users, { foreignKey: 'user_id' }); // Thiết lập ràng buộc khóa ngoại
+Admin.belongsTo(Users, { foreignKey: 'user_id', onDelete: 'CASCADE' }); // Thiết lập ràng buộc khóa ngoại
 
-WebsiteOwners.sync();
+Admin.sync();
 
-module.exports = WebsiteOwners;
+module.exports = Admin;

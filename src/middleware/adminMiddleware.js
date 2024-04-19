@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const authMiddleware = (req, res, next) => {
+const adminMiddleware = (req, res, next) => {
   const token = req.headers.token.split(" ")[1];
   jwt.verify(token, "accessToken", function (err, user) {
     if (err) {
@@ -8,8 +8,8 @@ const authMiddleware = (req, res, next) => {
       });
     }
 
-    if (user) {
-      req.userId = user.id;
+    if (user.role === "admin") {
+
       next();
     } else {
       return res.status(403).json({
@@ -19,4 +19,4 @@ const authMiddleware = (req, res, next) => {
   });
 };
 
-module.exports = authMiddleware;
+module.exports = adminMiddleware;
