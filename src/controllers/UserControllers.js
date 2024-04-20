@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const genneraAccessToken = require("../JwtService/accessToken");
 const genneraRefreshToken = require("../JwtService/refreshToken");
 const updateAccsessToken = require("../JwtService/updateAccsessToken");
-const Admin = require("../models/admin");
+const Admin = require("../models/AdminModels");
 
 class UserController {
   //resgister user customers
@@ -13,18 +13,18 @@ class UserController {
     const { email, password, setPassword } = req.body;
     if (!email || !password || !setPassword) {
       return res.status(400).json({
-        message: "Vui lòng điền đầy đủ thông tin.",
+        message: "Please complete all information.",
       });
     }
     if (password !== setPassword) {
       return res.status(400).json({
-        message: "Mật khẩu không khớp.",
+        message: "passwords are not the same",
       });
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({
-        message: "Địa chỉ email không hợp lệ.",
+        message: "invalid phone number.",
       });
     }
     try {
@@ -36,7 +36,7 @@ class UserController {
 
       if (user !== null) {
         return res.status(400).json({
-          message: "Email này đã tồn tại.",
+          message: "Email does not exist",
         });
       }
 

@@ -19,6 +19,7 @@ class ProvincesControllers {
       });
     }
   }
+  // get districts
   async provincesDistricts(req, res) {
     const idProvinces = req.params.id;
     if (!idProvinces) {
@@ -52,7 +53,7 @@ class ProvincesControllers {
       });
     }
   }
-
+// get wards
   async provincesWards(req, res) {
     const idDistricts = req.params.id;
     if (!idDistricts) {
