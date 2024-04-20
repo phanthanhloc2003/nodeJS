@@ -336,7 +336,7 @@ class UserController {
   //update user
   async updateUser(req, res) {
     const { name, nickname, gender, dateOfBirth } = req.body;
-    console.log(req.body);
+
     const userId = req.userId;
     if (!userId) {
       return res.status(400).json({
@@ -370,6 +370,43 @@ class UserController {
       });
     }
   }
+  //update name seller
+  async updateuserSellers(req, res){
+    const {shop_name, shop_address,phone,avata} = req.body
+    const userSellerid = req.userId
+    if (!userSellerid) {
+      return res.status(400).json({
+        status: "error",
+        message: "no tokens",
+      });
+    }
+   try {
+    await Sellers.update(
+      {
+        shop_name: shop_name,
+        shop_address: shop_address,
+        phone: phone,
+       avata:avata
+      },
+      {
+        where: {
+          user_id: userSellerid,
+        },
+      }
+    );
+   const userSellers =  await Sellers.findByPk(userSellerid);
+   return res.status(200).json({
+    status: "succsess",
+    data: userSellers
+   })
+   } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+   }
+  }
+
 }
 
 module.exports = new UserController();

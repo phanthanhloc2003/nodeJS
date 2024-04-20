@@ -17,10 +17,13 @@ const Sellers = sequelize.define(
     shop_name: {
       type: DataTypes.STRING,
     },
-    shop_category: {
+    shop_address: {
       type: DataTypes.STRING,
     },
-    shop_address: {
+    phone:{
+      type: DataTypes.INTEGER,
+    },
+    avata: {
       type: DataTypes.STRING,
     }
   },
