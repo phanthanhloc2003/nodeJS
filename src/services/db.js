@@ -7,15 +7,20 @@ const sequelize = new Sequelize(
     host: 'localhost',
     dialect: 'mssql',
     logging: false,
-    
   }
 );
- sequelize.authenticate()
-.then(() => {
-  console.log('connect successfully');
-})
-.catch(err => {
-  console.log('connect failed');
-});
 
-module.exports = sequelize
+async function connectDatabase() {
+  try {
+    await sequelize.authenticate();
+    console.log('Kết nối đến cơ sở dữ liệu thành công');
+    await sequelize.sync();
+    console.log('Đồng bộ hóa mô hình với cơ sở dữ liệu thành công');
+  } catch (error) {
+    console.error('Không thể kết nối đến cơ sở dữ liệu:', error);
+  }
+}
+
+connectDatabase();
+
+module.exports = sequelize;
