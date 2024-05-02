@@ -15,6 +15,15 @@ const Option = sequelize.define(
     name: {
       type: DataTypes.STRING,
     },
+    sold:{
+      type: DataTypes.INTEGER,
+    },
+    price: {
+      type: DataTypes.INTEGER,
+    },
+    price_before_discount:{
+      type: DataTypes.INTEGER,
+    }
   },
   {
     tableName: "Options",

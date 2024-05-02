@@ -18,5 +18,5 @@ const Variation = sequelize.define(
     timestamps: true, 
   }
 );
-Product.hasOne(Variation, {onDelete: 'CASCADE'});
+Product.hasMany(Variation, {onDelete: 'CASCADE'});
 module.exports = Variation;

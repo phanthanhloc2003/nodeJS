@@ -1,17 +1,21 @@
 const Product = require("../models/ProductModels");
+const Customers = require("../models/CustomersModels");
 const Description = require("../models/DescriptionModels");
 const ParagraphList = require("../models/ParagraphListModels");
 const Image = require("../models/ImagesModels");
 const Attributes = require("../models/AttributesModels");
 const Option = require("../models/OptionModels");
 const Variation = require("../models/VariationModels");
-const Quantity = require("../models/QuantityModels")
-const Rating = require("../models/RatingModels")
+const Quantity = require("../models/QuantityModels");
+const Rating = require("../models/RatingModels");
 class ProductControllers {
+  // create product
   async createProduct(req, res) {
+    const idUser = req.userId;
     const {
-      title,
+      name,
       origin,
+      discount,
       price,
       image,
       Variations,
@@ -21,22 +25,32 @@ class ProductControllers {
       imgaes,
     } = req.body;
     try {
-      const product = await Product.create({ title, origin, price, image });
+      // add product
+      const seller = await Customers.findByPk(idUser);
+      const product = await Product.create({
+        name,
+        origin,
+        price,
+        image,
+        discount,
+        shop_id: seller.user_id,
+      });
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
+      // add descriptions
       const descriptions = await Description.create({
         text: Descriptions,
         ProductId: product.id,
       });
       const quantity = await Quantity.create({
         quantity: 0,
-        ProductId: product.id
-      }) 
+        ProductId: product.id,
+      });
       const rating = await Rating.create({
         rating: 5,
-        ProductId: product.id
-      })
+        ProductId: product.id,
+      });
       const dataattributes = await Promise.all(
         attributes.map(async (list) => {
           const data = await Attributes.create({
@@ -50,7 +64,7 @@ class ProductControllers {
       const dataParagraphList = await Promise.all(
         ParagraphLists.map(async (list) => {
           const data = await ParagraphList.create({
-            img_id: list.list,
+            urlId: list.list,
             ratio: list.ratio,
             text: list.text,
             ProductId: product.id,
@@ -71,6 +85,9 @@ class ProductControllers {
             variation.option.map(async (option) => {
               const dataOption = await Option.create({
                 name: option.name,
+                sold: option.sold,
+                price: option.price,
+                price_before_discount: option.price_before_discount,
                 VariationId: datavariant.id,
               });
               if (!dataOption) {
@@ -81,7 +98,7 @@ class ProductControllers {
                 image = await Image.create({
                   url: option.image,
                   ProductId: product.id,
-                  VariationId: datavariant.id,
+                  OptionId: dataOption.id,
                 });
                 if (!image) {
                   throw new Error("Image not found");
@@ -97,19 +114,108 @@ class ProductControllers {
         imgaes.map(async (list) => {
           const data = await Image.create({
             idProduct: product.id,
-          url: list.url,
-          ProductId: product.id,
+            url: list,
+            ProductId: product.id,
           });
           return data;
         })
       );
       return res.status(201).json({
-        message: "Product created successfully"
+        message: "Product created successfully",
       });
     } catch (error) {
       console.error("Error creating product:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
+  }
+  //get all product
+  async getAllProduct(req, res) {
+    try {
+      const data = await Product.findAll({
+        include: [
+          {
+            model: Quantity,
+            as: "Quantity",
+            attributes: ["quantity"],
+          },
+          {
+            model: Rating,
+            as: "Rating",
+            attributes: ["rating"],
+          },
+        ],
+      });
+      return res.status(200).json({
+        message: "successfully",
+        data,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message,
+      });
+    }
+  }
+
+  async getDetailsProduct(req, res) {
+    const idProduct = req.params.id;
+    try {
+      const data = await Product.findAll({
+        where: { id: idProduct },
+        include: [
+          {
+            model: Quantity,
+            as: "Quantity",
+            attributes: ["quantity"],
+          },
+          {
+            model: Description,
+            as: "Description",
+            attributes: ["text"],
+          },
+
+          {
+            model: Variation,
+            as: "Variations",
+            attributes: ["name"],
+            include: [
+              { 
+                  model: Option, 
+                  as: "Options", 
+                  attributes: ["name", "sold", "price", "price_before_discount"],
+                  include: [
+                      { model: Image, as: "Images", attributes: ["url"]
+                    
+                     }
+                  ]
+              }
+          ]
+          },
+          {
+            model: Attributes,
+            as: "Attributes",
+            attributes: ["name", "value", "url"],
+          },
+          {
+            model: Rating,
+            as: "Rating",
+            attributes: ["rating"],
+          },
+          {
+            model: Image,
+            as: "Images",
+            attributes: ["url"],
+          },
+          {
+            model: ParagraphList,
+            as: "ParagraphLists",
+            attributes: ["urlId","text", "ratio"],
+          },
+        ],
+
+      });
+
+      res.json(data);
+    } catch (error) {}
   }
 }
 

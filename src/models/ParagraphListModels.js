@@ -10,7 +10,7 @@ const ParagraphList = sequelize.define(
       primaryKey: true,
     },
    
-    img_id: {
+    urlId: {
         type: DataTypes.INTEGER,
         defaultValue:null
     },
@@ -24,8 +24,8 @@ const ParagraphList = sequelize.define(
   },
   {
     tableName: "ParagraphLists",
-    timestamps: true, 
   }
 );
-Product.hasMany(ParagraphList, { onDelete: 'CASCADE'});
+Product.hasMany(ParagraphList,  { onDelete: 'CASCADE' });
+
 module.exports = ParagraphList;

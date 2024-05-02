@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../services/db");
 const Product = require("../models/ProductModels");
-const Variation = require("./VariationModels");
+const Option = require("./OptionModels")
 const Image = sequelize.define(
   "Image",
   {
@@ -9,15 +9,6 @@ const Image = sequelize.define(
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-    },
-    idProduct: {
-    type: DataTypes.INTEGER,
-      references: {
-        model: Product,
-        key: "id",
-        onDelete: 'CASCADE'
-      },
-    
     },
     url: {
       type: DataTypes.STRING,
@@ -28,6 +19,6 @@ const Image = sequelize.define(
     timestamps: true, 
   }
 );
-Product.hasOne(Image, {onDelete: 'CASCADE'});
-Variation.hasMany(Image)
+Product.hasMany(Image, {onDelete: 'CASCADE'});
+Option.hasMany(Image)
 module.exports = Image;
