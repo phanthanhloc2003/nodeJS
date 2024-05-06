@@ -23,6 +23,9 @@ const Option = sequelize.define(
     },
     price_before_discount:{
       type: DataTypes.INTEGER,
+    },
+    url: {
+      type: DataTypes.STRING,
     }
   },
   {
@@ -30,6 +33,6 @@ const Option = sequelize.define(
     timestamps: true,
   }
 );
-Variation.hasMany(Option); 
+Variation.hasMany(Option, {as: "list_Option"}); 
 
 module.exports = Option;

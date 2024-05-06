@@ -19,6 +19,5 @@ const Image = sequelize.define(
     timestamps: true, 
   }
 );
-Product.hasMany(Image, {onDelete: 'CASCADE'});
-Option.hasMany(Image)
+Product.hasMany(Image, { as : "list_image",onDelete: 'CASCADE'});
 module.exports = Image;

@@ -5,4 +5,7 @@ const authMiddleware = require("../middleware/authMiddleware")
 router.post("/create-product",authMiddleware , productControllers.createProduct)
 router.get("/getAll-product",authMiddleware , productControllers.getAllProduct)
 router.get("/getDetails-product/:id",authMiddleware , productControllers.getDetailsProduct)
+router.post("/create-comment",authMiddleware , productControllers.createComments)
+router.get("/getAllDetails-comment/:id",authMiddleware , productControllers.getAllDetailsProduct)
+router.put("/comments/:id/like-toggle",authMiddleware , productControllers.toggleCommentLike)
 module.exports= router

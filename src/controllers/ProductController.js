@@ -8,6 +8,10 @@ const Option = require("../models/OptionModels");
 const Variation = require("../models/VariationModels");
 const Quantity = require("../models/QuantityModels");
 const Rating = require("../models/RatingModels");
+const Comment = require("../models/CommentModels");
+const SellersResponse = require("../models/SellerResponseModejs");
+const Like = require("../models/LikeModels");
+const sequelize = require("../services/db");
 class ProductControllers {
   // create product
   async createProduct(req, res) {
@@ -88,6 +92,7 @@ class ProductControllers {
                 sold: option.sold,
                 price: option.price,
                 price_before_discount: option.price_before_discount,
+                url: option.image,
                 VariationId: datavariant.id,
               });
               if (!dataOption) {
@@ -159,7 +164,7 @@ class ProductControllers {
   async getDetailsProduct(req, res) {
     const idProduct = req.params.id;
     try {
-      const data = await Product.findAll({
+      const data = await Product.findOne({
         where: { id: idProduct },
         include: [
           {
@@ -178,17 +183,18 @@ class ProductControllers {
             as: "Variations",
             attributes: ["name"],
             include: [
-              { 
-                  model: Option, 
-                  as: "Options", 
-                  attributes: ["name", "sold", "price", "price_before_discount"],
-                  include: [
-                      { model: Image, as: "Images", attributes: ["url"]
-                    
-                     }
-                  ]
-              }
-          ]
+              {
+                model: Option,
+                as: "list_Option",
+                attributes: [
+                  "name",
+                  "sold",
+                  "price",
+                  "price_before_discount",
+                  "url",
+                ],
+              },
+            ],
           },
           {
             model: Attributes,
@@ -202,20 +208,104 @@ class ProductControllers {
           },
           {
             model: Image,
-            as: "Images",
+            as: "list_image",
             attributes: ["url"],
           },
           {
             model: ParagraphList,
             as: "ParagraphLists",
-            attributes: ["urlId","text", "ratio"],
+            attributes: ["urlId", "text", "ratio"],
           },
         ],
-
       });
+      return res.status(200).json({
+        data,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message,
+      });
+    }
+  }
 
-      res.json(data);
-    } catch (error) {}
+  async createComments(req, res) {
+    const idCustomers = req.userId;
+    const { idProduct, rating, content } = req.body;
+    const ischeckProduct = await Product.findByPk(idProduct);
+    if (!ischeckProduct) {
+      return res.status(404).json({
+        message: "Product not found",
+      });
+    }
+    try {
+      const data = await Comment.create({
+        idCustomers: idCustomers,
+        rating,
+        content,
+        idProduct,
+      });
+      return res.status(200).json({
+        message: "success",
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message,
+      });
+    }
+  }
+  async getAllDetailsProduct(req, res) {
+    const idProduct = req.params.id;
+    try {
+      const data = await Comment.findAll({
+        where: { idProduct: idProduct },
+        include: [
+          {
+            model: Customers,
+            attributes: ["avata"],
+          },
+          {
+            model: SellersResponse,
+            attributes: ["content"],
+          },
+          {
+            model:Like ,
+           as: "like",
+          //  attributes: [ [sequelize.fn('COUNT', sequelize.col('idCustomer')), 'like']],
+          }
+        ],
+      });
+      return res.json({ data });
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message,
+      });
+    }
+  }
+  async toggleCommentLike(req, res) {
+    const idComment = req.params.id;
+    const idCustomer = req.userId;
+
+    try {
+      const existingLike = await Like.findOne({
+        where: {
+          idCustomer: idCustomer,
+          idComment: idComment,
+        },
+      });
+      if (existingLike) {
+        await existingLike.destroy();
+      } else {
+        await Like.create({
+          idCustomer: idCustomer,
+          idComment: idComment,
+        });
+      }
+      return res.status(200).json({ message: "Success" });
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message,
+      });
+    }
   }
 }
 

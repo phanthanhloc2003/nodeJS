@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../services/db");
 const Product = require("../models/ProductModels")
-const User = require("./userModels")
+const Customers = require("./CustomersModels")
 const Comment = sequelize.define(
   "Comment",
   {
@@ -10,10 +10,10 @@ const Comment = sequelize.define(
       autoIncrement: true,
       primaryKey: true,
     },
-    idUser:{
+    idCustomers:{
       type: DataTypes.INTEGER,
     },
-    idSeller: {
+    idProduct: {
       type: DataTypes.INTEGER,
     },
     content: {
@@ -23,17 +23,14 @@ const Comment = sequelize.define(
         type: DataTypes.INTEGER,
         validate: {min: 1, max:5}
     },
-    likes: {
-        type: DataTypes.INTEGER,
-        defaultValue:0
-    }
   },
   {
     tableName: "Comments",
     timestamps: false, 
   }
 );
-User.hasMany(Comment);
-Product.hasMany(Comment, {onDelete: 'CASCADE'});
+// User.hasMany(Comment , {as: "ratings" , foreignKey:"idUser"});
+Comment.belongsTo(Customers,{ foreignKey:"idCustomers"} )
+Product.hasMany(Comment, {foreignKey:"idProduct",onDelete: 'CASCADE'});
 
 module.exports = Comment;
