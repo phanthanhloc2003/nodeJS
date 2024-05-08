@@ -29,7 +29,6 @@ const Comment = sequelize.define(
     timestamps: false, 
   }
 );
-// User.hasMany(Comment , {as: "ratings" , foreignKey:"idUser"});
 Comment.belongsTo(Customers,{ foreignKey:"idCustomers"} )
 Product.hasMany(Comment, {foreignKey:"idProduct",onDelete: 'CASCADE'});
 

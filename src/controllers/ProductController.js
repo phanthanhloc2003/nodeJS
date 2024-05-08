@@ -12,6 +12,7 @@ const Comment = require("../models/CommentModels");
 const SellersResponse = require("../models/SellerResponseModejs");
 const Like = require("../models/LikeModels");
 const sequelize = require("../services/db");
+const { where } = require("sequelize");
 class ProductControllers {
   // create product
   async createProduct(req, res) {
@@ -160,7 +161,7 @@ class ProductControllers {
       });
     }
   }
-
+  //get details Product
   async getDetailsProduct(req, res) {
     const idProduct = req.params.id;
     try {
@@ -227,7 +228,7 @@ class ProductControllers {
       });
     }
   }
-
+  // user commnet
   async createComments(req, res) {
     const idCustomers = req.userId;
     const { idProduct, rating, content } = req.body;
@@ -253,6 +254,7 @@ class ProductControllers {
       });
     }
   }
+  // get commet all product
   async getAllDetailsProduct(req, res) {
     const idProduct = req.params.id;
     try {
@@ -263,28 +265,34 @@ class ProductControllers {
             model: Customers,
             attributes: ["avata"],
           },
+
           {
             model: SellersResponse,
             attributes: ["content"],
           },
-          {
-            model:Like ,
-           as: "like",
-          //  attributes: [ [sequelize.fn('COUNT', sequelize.col('idCustomer')), 'like']],
-          }
         ],
+        attributes: {
+          include: [
+            [
+              sequelize.literal(
+                "(SELECT COUNT(*) FROM Likes WHERE Likes.idComment = Comment.id)"
+              ),
+              "like",
+            ],
+          ],
+        },
       });
-      return res.json({ data });
+      return res.json(data);
     } catch (error) {
       return res.status(500).json({
         message: error.message,
       });
     }
   }
+  // sum like product
   async toggleCommentLike(req, res) {
     const idComment = req.params.id;
     const idCustomer = req.userId;
-
     try {
       const existingLike = await Like.findOne({
         where: {
@@ -301,6 +309,33 @@ class ProductControllers {
         });
       }
       return res.status(200).json({ message: "Success" });
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message,
+      });
+    }
+  }
+
+  // response seller commnet Product
+  async sellersResponse(req, res) {
+    const idSeller = req.userId;
+    const { idProduct, idComment, response } = req.body;
+    const icheck = await Product.findOne({
+      where: { shop_id: idSeller, id: idProduct },
+    });
+    if(!icheck) {
+       return res.status(404).json({
+        message:"You are not eligible to respond"
+       })
+    }
+    try {
+      const data = await SellersResponse.create({
+        content: response,
+        idComment
+      })
+      return res.status(200).json({
+        message:"Success"
+    })
     } catch (error) {
       return res.status(500).json({
         message: error.message,

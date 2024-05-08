@@ -9,6 +9,10 @@ const like = sequelize.define(
         autoIncrement: true,
         primaryKey: true
     },
+    // idProduct:{
+    //     type: DataTypes.INTEGER,
+    //     allowNull: false
+    // },
     idCustomer: {
         type: DataTypes.INTEGER,
         allowNull: false

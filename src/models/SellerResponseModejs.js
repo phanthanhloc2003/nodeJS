@@ -12,11 +12,16 @@ const SellerResonse = sequelize.define(
     content: {
       type: DataTypes.TEXT,
     },
+    idComment: {
+      type: DataTypes.INTEGER,
+    }
   },
   {
     tableName: "SellerResonses",
     timestamps: false, 
   }
 );
-Comment.hasMany(SellerResonse,{onDelete: 'CASCADE'});
+Comment.hasOne(SellerResonse,{ foreignKey: "idComment",  onDelete: 'CASCADE'});
+
+// SellerResonse.belongsTo(Comment,{ foreignKey: "idComment",  onDelete: 'CASCADE'} )
 module.exports = SellerResonse;
