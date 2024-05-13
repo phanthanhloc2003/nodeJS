@@ -20,5 +20,4 @@ const Outstanding = sequelize.define(
    },
   }
 );
-Outstanding.sync();
 module.exports = Outstanding;

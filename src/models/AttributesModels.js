@@ -24,5 +24,4 @@ const Attributes = sequelize.define(
   }
 );
 Product.hasMany(Attributes,  { onDelete: 'CASCADE' });
-// Attributes.belongsTo(Product, { foreignKey: 'idProduct' , onDelete: 'CASCADE' });
 module.exports = Attributes;

@@ -28,5 +28,5 @@ const Users = sequelize.define(
     timestamps: true, // Tạo cột "createdAt" và "updatedAt"
   }
 );
-Users.sync();
+
 module.exports = Users;

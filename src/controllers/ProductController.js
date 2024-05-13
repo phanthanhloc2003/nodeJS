@@ -13,6 +13,7 @@ const SellersResponse = require("../models/SellerResponseModejs");
 const Like = require("../models/LikeModels");
 const sequelize = require("../services/db");
 const { where } = require("sequelize");
+const { calculateAverageRating } = require("../utils/ratingUtils");
 class ProductControllers {
   // create product
   async createProduct(req, res) {
@@ -188,6 +189,7 @@ class ProductControllers {
                 model: Option,
                 as: "list_Option",
                 attributes: [
+                  "id",
                   "name",
                   "sold",
                   "price",
@@ -228,7 +230,7 @@ class ProductControllers {
       });
     }
   }
-  // user commnet
+  // user comment and update ratings Product
   async createComments(req, res) {
     const idCustomers = req.userId;
     const { idProduct, rating, content } = req.body;
@@ -245,6 +247,11 @@ class ProductControllers {
         content,
         idProduct,
       });
+      const averageRating = await calculateAverageRating(idProduct);
+      await Rating.update(
+        { rating: averageRating },
+        { where: { id: idProduct } }
+      );
       return res.status(200).json({
         message: "success",
       });
@@ -315,7 +322,6 @@ class ProductControllers {
       });
     }
   }
-
   // response seller commnet Product
   async sellersResponse(req, res) {
     const idSeller = req.userId;
@@ -323,19 +329,19 @@ class ProductControllers {
     const icheck = await Product.findOne({
       where: { shop_id: idSeller, id: idProduct },
     });
-    if(!icheck) {
-       return res.status(404).json({
-        message:"You are not eligible to respond"
-       })
+    if (!icheck) {
+      return res.status(404).json({
+        message: "You are not eligible to respond",
+      });
     }
     try {
       const data = await SellersResponse.create({
         content: response,
-        idComment
-      })
+        idComment,
+      });
       return res.status(200).json({
-        message:"Success"
-    })
+        message: "Success",
+      });
     } catch (error) {
       return res.status(500).json({
         message: error.message,

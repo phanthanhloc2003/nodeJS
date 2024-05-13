@@ -36,7 +36,6 @@ const Customers = sequelize.define(
 );
 
 Customers.belongsTo(Users, { foreignKey: "user_id", onDelete: "CASCADE" }); // Thiết lập ràng buộc khóa ngoại
-
 Customers.sync();
 
 module.exports = Customers;

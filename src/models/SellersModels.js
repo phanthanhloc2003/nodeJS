@@ -33,7 +33,4 @@ const Sellers = sequelize.define(
 );
 
 Sellers.belongsTo(Users, { foreignKey: "user_id",onDelete: 'CASCADE' }); // Thiết lập ràng buộc khóa ngoại
-
-Sellers.sync();
-
 module.exports = Sellers;
