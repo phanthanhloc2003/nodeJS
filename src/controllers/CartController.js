@@ -43,7 +43,7 @@ class CartController {
           },
           {
             model: Option,
-            attributes: ["name"],
+            attributes: ["id","name"],
           },
         ],
       });
