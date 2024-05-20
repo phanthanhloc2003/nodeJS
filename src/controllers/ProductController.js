@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const Product = require("../models/ProductModels");
 const Customers = require("../models/CustomersModels");
 const Description = require("../models/DescriptionModels");
@@ -12,7 +13,6 @@ const Comment = require("../models/CommentModels");
 const SellersResponse = require("../models/SellerResponseModejs");
 const Like = require("../models/LikeModels");
 const sequelize = require("../services/db");
-const { where } = require("sequelize");
 const { calculateAverageRating } = require("../utils/ratingUtils");
 class ProductControllers {
   // create product
@@ -137,61 +137,75 @@ class ProductControllers {
   }
   //get all product
   async getAllProduct(req, res) {
+   const  _name_search = req.query.name_search || " " ;
+   const _page = parseInt(req.query._page) || 1; 
+   const _limit = parseInt(req.query._limit) || 8; 
+  
     try {
       const data = await Product.findAll({
-        include: [
-          {
-            model: Quantity,
-            as: "Quantity",
-            attributes: ["quantity"],
-          },
-          {
-            model: Description,
-            as: "Description",
-            attributes: ["text"],
-          },
-
-          {
-            model: Variation,
-            as: "Variations",
-            attributes: ["name"],
-            include: [
-              {
-                model: Option,
-                as: "list_Option",
-                attributes: [
-                  "id",
-                  "name",
-                  "sold",
-                  "price",
-                  "price_before_discount",
-                  "url",
-                ],
-              },
-            ],
-          },
-          {
-            model: Attributes,
-            as: "Attributes",
-            attributes: ["name", "value", "url"],
-          },
-          {
-            model: Rating,
-            as: "Rating",
-            attributes: ["rating"],
-          },
-          {
-            model: Image,
-            as: "list_image",
-            attributes: ["url"],
-          },
-          {
-            model: ParagraphList,
-            as: "ParagraphLists",
-            attributes: ["urlId", "text", "ratio"],
-          },
-        ],
-      });
+        where: {
+          [Op.or]: [
+              { 'name': { [Op.like]: `%${_name_search}%` } },
+          ]
+      },
+          include: [
+            {
+              model: Quantity,   
+              as: "Quantity",
+              attributes: ["quantity"],
+            },
+            {
+              model: Description,
+              as: "Description",
+              attributes: ["text"],
+            },
+  
+            {
+              model: Variation,
+              as: "Variations",
+              attributes: ["name"],
+              include: [
+                {
+                  model: Option,
+                  as: "list_Option",
+                  attributes: [
+                    "id",
+                    "name",
+                    "sold",
+                    "price",
+                    "price_before_discount",
+                    "url",
+                  ],
+                },
+              ],
+            },
+            {
+              model: Attributes,
+              as: "Attributes",
+              attributes: ["name", "value", "url"],
+            },
+            {
+              model: Rating,
+              as: "Rating",
+              attributes: ["rating"],
+            },
+            {
+              model: Image,
+              as: "list_image",
+              attributes: ["url"],
+            },
+            {
+              model: ParagraphList,
+              as: "ParagraphLists",
+              attributes: ["urlId", "text", "ratio"],
+            },
+          ],
+          limit: _limit,
+          offset: _page && (_page - 1) * _limit,
+        
+        }
+      
+   );
       return res.status(200).json({
         message: "successfully",
         data,
