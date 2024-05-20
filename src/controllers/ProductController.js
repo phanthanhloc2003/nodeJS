@@ -146,9 +146,49 @@ class ProductControllers {
             attributes: ["quantity"],
           },
           {
+            model: Description,
+            as: "Description",
+            attributes: ["text"],
+          },
+
+          {
+            model: Variation,
+            as: "Variations",
+            attributes: ["name"],
+            include: [
+              {
+                model: Option,
+                as: "list_Option",
+                attributes: [
+                  "id",
+                  "name",
+                  "sold",
+                  "price",
+                  "price_before_discount",
+                  "url",
+                ],
+              },
+            ],
+          },
+          {
+            model: Attributes,
+            as: "Attributes",
+            attributes: ["name", "value", "url"],
+          },
+          {
             model: Rating,
             as: "Rating",
             attributes: ["rating"],
+          },
+          {
+            model: Image,
+            as: "list_image",
+            attributes: ["url"],
+          },
+          {
+            model: ParagraphList,
+            as: "ParagraphLists",
+            attributes: ["urlId", "text", "ratio"],
           },
         ],
       });
